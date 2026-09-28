@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Relatório Mensal dos Atletas - Rugby em Cadeira de Rodas</title>
+  <!-- Tailwind CSS para estilização moderna e responsiva -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome para ícones -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @media print {
+      body {
+        background: white !important;
+        color: #111 !important;
+        font-size: 11pt !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .print-only {
+        display: block !important;
+      }
+      .page-break {
+        page-break-before: always;
+      }
+      .card-box {
+        border: 1px solid #ccc !important;
+        box-shadow: none !important;
+        margin-bottom: 12px !important;
+        padding: 10px !important;
+        background: transparent !important;
+      }
+      input, select, textarea {
+        border: none !important;
+        border-bottom: 1px solid #999 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+      }
+      .signature-pad-container {
+        border: 1px dashed #666 !important;
+      }
+    }
+    .print-only {
+      display: none;
+    }
+    /* Estilo do canvas de assinatura */
+    #signature-pad {
+      touch-action: none;
+      background-color: #fafafa;
+      cursor: crosshair;
+    }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen py-4 px-2 sm:px-6 lg:px-8">
+
+  <div class="max-w-4xl mx-auto bg-white shadow-xl rounded-2xl overflow-hidden border border-slate-200">
+    
+    <!-- CABEÇALHO DO RELATÓRIO -->
+    <header class="bg-gradient-to-r from-blue-900 via-blue-800 to-indigo-900 text-white p-6 sm:p-8">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-blue-700/60 pb-6">
+        <div class="text-center sm:text-left">
+          <span class="inline-block bg-yellow-400 text-blue-950 font-black text-xs px-3 py-1 rounded-full uppercase tracking-wider mb-2">
+            ABRC • Rugby em Cadeira de Rodas
+          </span>
+          <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">RELATÓRIO MENSAL DOS ATLETAS</h1>
+          <p class="text-blue-200 text-sm mt-1">Coordenação de Alto Rendimento • Seleção Brasileira</p>
+        </div>
+        <div class="flex items-center space-x-3 bg-white/10 px-4 py-2 rounded-xl backdrop-blur-sm border border-white/20">
+          <i class="fa-solid fa-wheelchair text-3xl text-yellow-300"></i>
+          <div class="text-xs">
+            <p class="font-semibold text-white">Programa Nacional</p>
+            <p class="text-blue-200">Temporada Oficial</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ORIENTAÇÕES IMPORTANTES -->
+      <div class="mt-6 bg-blue-950/60 rounded-xl p-4 sm:p-5 border border-blue-600/40 text-sm space-y-2">
+        <div class="flex items-center gap-2 text-yellow-300 font-bold text-base">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <span>ORIENTAÇÕES IMPORTANTES — LEIA COM ATENÇÃO</span>
+        </div>
+        <p class="text-slate-200">
+          Todos os atletas bolsistas devem <strong>obrigatoriamente</strong> preencher o relatório mensal utilizando esse modelo. Para os atletas que não recebem a bolsa, o preenchimento é opcional — mas a opinião de todos é fundamental.
+        </p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2 text-xs text-blue-100">
+          <div class="flex items-start gap-2">
+            <i class="fa-solid fa-calendar-check text-yellow-400 mt-0.5"></i>
+            <span><strong>Prazo de entrega:</strong> até o dia 28 de cada mês.</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <i class="fa-solid fa-clock text-yellow-400 mt-0.5"></i>
+            <span><strong>Data do relatório:</strong> informar sempre o último dia do mês.</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <i class="fa-solid fa-envelope text-yellow-400 mt-0.5"></i>
+            <span><strong>E-mail:</strong> <a href="mailto:altorendimento@rugbiabrc.org.br" class="underline text-yellow-200">altorendimento@rugbiabrc.org.br</a></span>
+          </div>
+          <div class="flex items-start gap-2">
+            <i class="fa-brands fa-whatsapp text-green-400 mt-0.5"></i>
+            <span><strong>WhatsApp:</strong> (21) 97135-3180 (Ricardo Tanhoffer)</span>
+          </div>
+        </div>
+        <p class="text-xs text-blue-300 italic pt-1">
+          * Em até 15 dias após a entrega, uma devolutiva geral será disponibilizada. Serão divulgados apenas dados gerais — o anonimato e a confidencialidade de informações sensíveis serão sempre respeitados.
+        </p>
+      </div>
+    </header>
+
+    <!-- FORMULÁRIO -->
+    <form id="relatorioForm" class="p-6 sm:p-8 space-y-8" onsubmit="event.preventDefault();">
+
+      <!-- SEÇÃO: IDENTIFICAÇÃO -->
+      <section class="card-box bg-slate-50 p-5 rounded-xl border border-slate-200">
+        <h2 class="text-lg font-bold text-blue-900 border-b border-slate-200 pb-2 mb-4 flex items-center gap-2">
+          <i class="fa-solid fa-id-card text-blue-700"></i> IDENTIFICAÇÃO DO ATLETA
+        </h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label for="atletaNome" class="block text-sm font-semibold text-slate-700 mb-1">
+              Nome do Atleta <span class="text-red-500">*</span>
+            </label>
+            <select id="atletaNome" required class="w-full px-3 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-600 focus:border-blue-600 bg-white text-slate-800 text-sm">
+              <option value="">-- Selecione seu nome na lista (23 Atletas) --</option>
+              <option value="Alexandre Giuriato">Alexandre Giuriato</option>
+              <option value="Alexandre Taniguchi">Alexandre Taniguchi</option>
+              <option value="André Castro">André Castro</option>
+              <option value="Antônio Carlos Martins">Antônio Carlos Martins</option>
+              <option value="Cauê Maia">Cauê Maia</option>
+              <option value="Cleonete Reis">Cleonete Reis</option>
+              <option value="Erick Silva">Erick Silva</option>
+              <option value="Gabriel Feitosa">Gabriel Feitosa</option>
+              <option value="Gabriel Simplício">Gabriel Simplício</option>
+              <option value="Gabriel Sobreira">Gabriel Sobreira</option>
+              <option value="Gilson Wirzma Jr">Gilson Wirzma Jr</option>
+              <option value="Guilherme Benevides">Guilherme Benevides</option>
+              <option value="Guilherme Camargo">Guilherme Camargo</option>
+              <option value="Hawanna Ribeiro">Hawanna Ribeiro</option>
+              <option value="Julio Braz">Julio Braz</option>
+              <option value="Leonardo Pacca">Leonardo Pacca</option>
+              <option value="Lucas Junqueira">Lucas Junqueira</option>
+              <option value="Marcílio Nunes">Marcílio Nunes</option>
+              <option value="Rafael Hoffmann">Rafael Hoffmann</option>
+              <option value="Raphael Lucena">Raphael Lucena</option>
+              <option value="Rodolfo Polidoro">Rodolfo Polidoro</option>
+              <option value="Ruth Borges">Ruth Borges</option>
+              <option value="Weberson Rodrigues">Weberson Rodrigues</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="mesReferencia" class="block text-sm font-semibold text-slate-700 mb-1">
+              Mês e Ano de Referência <span class="text-red-500">*</span>
+            </label>
+            <input type="month" id="mesReferencia" required class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-600 focus:border-blue-600 bg-white text-slate-800 text-sm">
+          </div>
+
+          <div class="sm:col-span-2 mt-2">
+            <label class="block text-sm font-semibold text-slate-700 mb-1">
+              Recebe Bolsa do Programa Nacional? <span class="text-red-500">*</span>
+            </label>
+            <p class="text-xs text-slate-500 mb-2">Considerar apenas a bolsa do PROGRAMA NACIONAL da ABRC.</p>
+            <div class="flex gap-6">
+              <label class="inline-flex items-center cursor-pointer">
+                <input type="radio" name="recebeBolsa" value="SIM" required class="w-4 h-4 text-blue-600 focus:ring-blue-500">
+                <span class="ml-2 text-sm text-slate-800 font-medium">SIM (Obrigatório)</span>
+              </label>
+              <label class="inline-flex items-center cursor-pointer">
+                <input type="radio" name="recebeBolsa" value="NÃO" class="w-4 h-4 text-blue-600 focus:ring-blue-500">
+                <span class="ml-2 text-sm text-slate-800 font-medium">NÃO (Opcional)</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SEÇÃO: ATIVIDADES -->
+      <section class="card-box bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-4">
+        <h2 class="text-lg font-bold text-blue-900 border-b border-slate-200 pb-2 flex items-center gap-2">
+          <i class="fa-solid fa-list-check text-blue-700"></i> ATIVIDADES DO MÊS
+        </h2>
+
+        <div>
+          <label class="block text-sm font-semibold text-slate-800 mb-2">
+            1. Quais atividades você participou durante esse mês? <span class="text-red-500">*</span>
+          </label>
+          <div class="space-y-2 text-sm">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" name="q1_atividades" value="Não participei de nenhuma atividade/evento" class="rounded text-blue-600 focus:ring-blue-500">
+              <span>Não participei de nenhuma atividade/evento</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" name="q1_atividades" value="Semana de treinamento da seleção" class="rounded text-blue-600 focus:ring-blue-500">
+              <span>Semana de treinamento da seleção</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" name="q1_atividades" value="Torneios internacionais (pela seleção brasileira)" class="rounded text-blue-600 focus:ring-blue-500">
+              <span>Torneios internacionais (pela seleção brasileira)</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" name="q1_atividades" value="Torneios/Campeonato em nível nacional ou regional (pelo seu clube)" class="rounded text-blue-600 focus:ring-blue-500">
+              <span>Torneios/Campeonato em nível nacional ou regional (pelo seu clube)</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" name="q1_atividades" value="Cursos, palestras, reuniões ou 'lives' (relacionados ao Programa Nacional/seleção brasileira)" class="rounded text-blue-600 focus:ring-blue-500">
+              <span>Cursos, palestras, reuniões ou ‘lives' (relacionados ao Programa Nacional/seleção brasileira)</span>
+            </label>
+            <div class="flex items-center gap-2">
+              <input type="checkbox" id="q1_outro_check" name="q1_atividades" value="Outros" class="rounded text-blue-600 focus:ring-blue-500">
+              <span class="whitespace-nowrap">Outros (especifique):</span>
+              <input type="text" id="q1_outro_texto" placeholder="Descreva aqui..." class="w-full text-xs px-2 py-1 border border-slate-300 rounded focus:ring-1 focus:ring-blue-500">
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label for="q1_2" class="block text-sm font-semibold text-slate-800 mb-1">
+            1.2 Se você marcou alguma opção acima, escreva aqui quais foram as atividades e as datas:
+          </label>
+          <textarea id="q1_2" rows="2" placeholder="Ex: Semana de treino em SP de 10 a 16/10; Campeonato Regional dias 22 e 23..." class="w-full p-2.5 text-sm rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500"></textarea>
+        </div>
+
+        <div class="pt-3 border-t border-slate-200">
+          <label class="block text-sm font-semibold text-slate-800 mb-2">
+            2. Foi solicitado por algum profissional especialista (medicina, enfermagem, fisioterapia) para você preencher algum formulário ou questionário? <span class="text-red-500">*</span>
+          </label>
+          <div class="flex gap-6">
+            <label class="inline-flex items-center cursor-pointer">
+              <input type="radio" name="q2_solicitacao" value="Sim" onchange="toggleQ2(true)" required class="w-4 h-4 text-blue-600">
+              <span class="ml-2 text-sm text-slate-700">Sim</span>
+            </label>
+            <label class="inline-flex items-center cursor-pointer">
+              <input type="radio" name="q2_solicitacao" value="Não" onchange="toggleQ2(false)" class="w-4 h-4 text-blue-600">
+              <span class="ml-2 text-sm text-slate-700">Não</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- CONDICIONAL Q3 -->
+        <div id="box_q3" class="hidden pl-4 border-l-4 border-blue-500 space-y-3 bg-blue-50/50 p-3 rounded-r-lg">
+          <label class="block text-sm font-semibold text-slate-800">
+            3. Você preencheu TODAS essas solicitações?
+          </label>
+          <div class="flex gap-6">
+            <label class="inline-flex items-center cursor-pointer">
+              <input type="radio" name="q3_preencheu" value="Sim" onchange="toggleQ3(true)" class="w-4 h-4 text-blue-600">
+              <span class="ml-2 text-sm text-slate-700">Sim</span>
+            </label>
+            <label class="inline-flex items-center cursor-pointer">
+              <input type="radio" name="q3_preencheu" value="Não" onchange="toggleQ3(false)" class="w-4 h-4 text-blue-600">
+              <span class="ml-2 text-sm text-slate-700">Não</span>
+            </label>
+          </div>
+
+          <!-- CONDICIONAL Q3.1 -->
+          <div id="box_q3_1" class="hidden pt-2">
+            <label for="q3_1_motivo" class="block text-xs font-bold text-red-700 mb-1">
+              3.1 Se não preencheu, qual foi o motivo?
+            </label>
+            <textarea id="q3_1_motivo" rows="2" placeholder="Explique o motivo do não preenchimento..." class="w-full p-2 text-sm rounded-lg border border-red-300 focus:ring-2 focus:ring-red-500 bg-white"></textarea>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- SEÇÃO: TREINAMENTOS REALIZADOS -->
+      <section class="card-box bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-5">
+        <h2 class="text-lg font-bold text-blue-900 border-b border-slate-200 pb-2 flex items-center gap-2">
+          <i class="fa-solid fa-dumbbell text-blue-700"></i> TREINAMENTOS REALIZADOS
+        </h2>
+
+        <div>
+          <label class="block text-sm font-semibold text-slate-800 mb-2">
+            4. Qual a frequência (média semanal) que você treinou em quadra esse mês? <span class="text-red-500">*</span>
+          </label>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 text-sm">
+            <label class="p-2 border rounded-lg bg-white flex items-center gap-2 cursor-pointer hover:bg-slate-100">
+              <input type="radio" name="q4_quadra" value="Não treinei em quadra" required class="text-blue-600">
+              <span>Não treinei em quadra</span>
+            </label>
+            <label class="p-2 border rounded-lg bg-white flex items-center gap-2 cursor-pointer hover:bg-slate-100">
+              <input type="radio" name="q4_quadra" value="1 vez por semana" class="text-blue-600">
+              <span>1 vez por semana</span>
+            </label>
+            <label class="p-2 border rounded-lg bg-white flex items-center gap-2 cursor-pointer hover:bg-slate-100">
+              <input type="radio" name="q4_quadra" value="2 vezes por semana" class="text-blue-600">
+              <span>2 vezes por semana</span>
+            </label>
+            <label class="p-2 border rounded-lg bg-white flex items-center gap-2 cursor-pointer hover:bg-slate-100">
+              <input type="radio" name="q4_quadra" value="3 vezes por semana" class="text-blue-600">
+              <span>3 vezes por semana</span>
+            </label>
+            <label class="p-2 border rounded-lg bg-white flex items-center gap-2 cursor-pointer hover:bg-slate-100">
+              <input type="radio" name="q4_quadra" value="4 vezes por semana" class="text-blue-600">
+              <span>4 vezes por semana</span>
+            </label>
+            <label class="p-2 border rounded-lg bg-white flex items-center gap-2 cursor-pointer hover:bg-slate-100">
+              <input type="radio" name="q4_quadra" value="5 ou mais vezes por semana" class="text-blue-600">
+              <span>5 ou mais vezes por semana</span>
+            </label>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-slate-800 mb-1">
+            5. Qual a frequência (média semanal) que você fez musculação, treinamento funcional ou algum outro tipo de treino complementar esse mês? <span class="text-red-500">*</span>
+          </label>
+          <p class="text-xs text-amber-700 bg-amber-50 p-2 rounded border border-amber-200 mb-2">
+            ⚠️ <strong>IMPORTANTE:</strong> NÃO considerar fisioterapia. Some todos os tipos de treinos complementares (exemplo: 2 treinos de musculação + 1 treino de funcional na semana = “3 vezes por semana”).
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 text-sm">
+            <label class="p-2 border rounded-lg bg-white flex items-center gap-2 cursor-pointer hover:bg-slate-100">
+              <input type="radio" name="q5_complementar_freq" value="Não realizei nenhum treino complementar" required class="text-blue-600">
+              <span>Não realizei nenhum treino</span>
+            </label>
+            <label class="p-2 border rounded-lg bg-white flex items-center gap-2 cursor-pointer hover:bg-slate-100">
+              <input type="radio" name="q5_complementar_freq" value="1 vez por semana" class="text-blue-600">
+              <span>1 vez por semana</span>
+            </label>
+            <label class="p-2 border rounded-lg bg-white flex items-center gap-2 cursor-pointer hover:bg-slate-100">
+              <input type="radio" name="q5_complementar_freq" value="2 vezes por semana" class="text-blue-600">
+              <span>2 vezes por semana</span>
+            </label>
+            <label class="p-2 border rounded-lg bg-white flex items-center gap-2 cursor-pointer hover:bg-slate-100">
+              <input type="radio" name="q5_complementar_freq" value="3 vezes por semana" class="text-blue-600">
+              <span>3 vezes por semana</span>
+            </label>
+            <label class="p-2 border rounded-lg bg-white flex items-center gap-2 cursor-pointer hover:bg-slate-100">
+              <input type="radio" name="q5_complementar_freq" value="4 vezes por semana" class="text-blue-600">
+              <span>4 vezes por semana</span>
+            </label>
+            <label class="p-2 border rounded-lg bg-white flex items-center gap-2 cursor-pointer hover:bg-slate-100">
+              <input type="radio" name="q5_complementar_freq" value="5 ou mais vezes por semana" class="text-blue-600">
+              <span>5 ou mais vezes por semana</span>
+            </label>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-slate-800 mb-2">
+            6. Qual tipo de treino complementar você fez? <span class="text-red-500">*</span>
+          </label>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" name="q6_tipo" value="Não fiz nenhum treino complementar" class="rounded text-blue-600">
+              <span>Não fiz nenhum treino complementar</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" name="q6_tipo" value="Musculação" class="rounded text-blue-600">
+              <span>Musculação</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" name="q6_tipo" value="Treinamento funcional" class="rounded text-blue-600">
+              <span>Treinamento funcional</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" name="q6_tipo" value="Crossfit / Crosstraining" class="rounded text-blue-600">
+              <span>Crossfit / Crosstraining</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" name="q6_tipo" value="Tocar a cadeira na rua, praça, etc" class="rounded text-blue-600">
+              <span>Tocar a cadeira na rua, praça, etc</span>
+            </label>
+            <div class="flex items-center gap-2">
+              <input type="checkbox" id="q6_outro_check" name="q6_tipo" value="Outro" class="rounded text-blue-600">
+              <span class="whitespace-nowrap">Outro:</span>
+              <input type="text" id="q6_outro_texto" placeholder="Especifique..." class="w-full text-xs px-2 py-1 border border-slate-300 rounded">
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label for="q7_detalhes" class="block text-sm font-semibold text-slate-800 mb-1">
+            7. Detalhe como foram os treinos complementares por você executados:
+          </label>
+          <p class="text-xs text-slate-500 mb-1">Exemplo: Os treinos em quadra tiveram duração média de 90 min, na academia 45 min, etc.</p>
+          <textarea id="q7_detalhes" rows="3" placeholder="Escreva os detalhes dos treinos..." class="w-full p-2.5 text-sm rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500"></textarea>
+        </div>
+
+      </section>
+
+      <!-- SEÇÃO: PREPARAÇÃO FÍSICA -->
+      <section class="card-box bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-4">
+        <h2 class="text-lg font-bold text-blue-900 border-b border-slate-200 pb-2 flex items-center gap-2">
+          <i class="fa-solid fa-person-running text-blue-700"></i> PREPARAÇÃO FÍSICA
+        </h2>
+
+        <div>
+          <label class="block text-sm font-semibold text-slate-800 mb-2">
+            8. Você está sendo orientado e/ou acompanhado por algum profissional da área da educação física (personal trainer, fisiologista etc.)? <span class="text-red-500">*</span>
+          </label>
+          <div class="flex gap-6">
+            <label class="inline-flex items-center cursor-pointer">
+              <input type="radio" name="q8_edfisica" value="Sim" onchange="toggleQ8(true)" required class="w-4 h-4 text-blue-600">
+              <span class="ml-2 text-sm text-slate-700">Sim</span>
+            </label>
+            <label class="inline-flex items-center cursor-pointer">
+              <input type="radio" name="q8_edfisica" value="Não" onchange="toggleQ8(false)" class="w-4 h-4 text-blue-600">
+              <span class="ml-2 text-sm text-slate-700">Não</span>
+            </label>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-slate-800 mb-2">
+            8.1 Quem oferece o serviço do profissional de educação física que você está utilizando? (Pode marcar mais de uma)
+          </label>
+          <div class="space-y-1.5 text-sm">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" name="q8_1_oferece" value="Não estou utilizando" class="rounded text-blue-600">
+              <span>Não estou utilizando</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" name="q8_1_oferece" value="O Programa Nacional da ABRC" class="rounded text-blue-600">
+              <span>O Programa Nacional da ABRC</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" name="q8_1_oferece" value="Meu clube" class="rounded text-blue-600">
+              <span>Meu clube</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" name="q8_1_oferece" value="Particular" class="rounded text-blue-600">
+              <span>Particular</span>
+            </label>
+            <div class="flex items-center gap-2">
+              <input type="checkbox" id="q8_1_outro_check" name="q8_1_oferece" value="Outro" class="rounded text-blue-600">
+              <span class="whitespace-nowrap">Outro. Especifique:</span>
+              <input type="text" id="q8_1_outro_texto" class="w-full text-xs px-2 py-1 border border-slate-300 rounded">
+            </div>
+          </div>
+        </div>
+
+        <!-- CONDICIONAL Q8.2 -->
+        <div id="box_q8_2" class="hidden pl-4 border-l-4 border-amber-500 bg-amber-50/60 p-3 rounded-r-lg">
+          <label for="q8_2_motivo" class="block text-xs font-bold text-amber-900 mb-1">
+            IMPORTANTE - 8.2 Caso você NÃO esteja utilizando esse serviço profissional, qual é o motivo?
+          </label>
+          <textarea id="q8_2_motivo" rows="2" placeholder="Descreva o motivo de não utilizar..." class="w-full p-2 text-sm rounded border border-amber-300 bg-white"></textarea>
+        </div>
+      </section>
+
+      <!-- SEÇÃO: NUTRIÇÃO -->
+      <section class="card-box bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-4">
+        <h2 class="text-lg font-bold text-blue-900 border-b border-slate-200 pb-2 flex items-center gap-2">
+          <i class="fa-solid fa-apple-whole text-blue-700"></i> NUTRIÇÃO
+        </h2>
+
+        <div>
+          <label class="block text-sm font-semibold text-slate-800 mb-2">
+            9. Você está recebendo orientações ou fazendo acompanhamento nutricional? <span class="text-red-500">*</span>
+          </label>
+          <div class="flex gap-6">
+            <label class="inline-flex items-center cursor-pointer">
+              <input type="radio" name="q9_nutricao" value="Sim" onchange="toggleQ9(true)" required class="w-4 h-4 text-blue-600">
+              <span class="ml-2 text-sm text-slate-700">Sim</span>
+            </label>
+            <label class="inline-flex items-center cursor-pointer">
+              <input type="radio" name="q9_nutricao" value="Não" onchange="toggleQ9(false)" class="w-4 h-4 text-blue-600">
+              <span class="ml-2 text-sm text-slate-700">Não</span>
+            </label>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-slate-800 mb-2">
+            9.1 Quem oferece o serviço do profissional de nutrição que você está utilizando? (Pode marcar mais de uma)
+          </label>
+          <div class="space-y-1.5 text-sm">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" name="q9_1_oferece" value="Não estou utilizando" class="rounded text-blue-600">
+              <span>Não estou utilizando</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" name="q9_1_oferece" value="O Programa Nacional da ABRC" class="rounded text-blue-600">
+              <span>O Programa Nacional da ABRC</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" name="q9_1_oferece" value="Meu clube" class="rounded text-blue-600">
+              <span>Meu clube</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" name="q9_1_oferece" value="Particular" class="rounded text-blue-600">
+              <span>Particular</span>
+            </label>
+            <div class="flex items-center gap-2">
+              <input type="checkbox" id="q9_1_outro_check" name="q9_1_oferece" value="Outro" class="rounded text-blue-600">
+              <span class="whitespace-nowrap">Outro. Especifique:</span>
+              <input type="text" id="q9_1_outro_texto" class="w-full text-xs px-2 py-1 border border-slate-300 rounded">
+            </div>
+          </div>
+        </div>
+
+        <!-- CONDICIONAL Q9.2 -->
+        <div id="box_q9_2" class="hidden pl-4 border-l-4 border-amber-500 bg-amber-50/60 p-3 rounded-r-lg">
+          <label for="q9_2_motivo" class="block text-xs font-bold text-amber-900 mb-1">
+            IMPORTANTE - 9.2 Caso você NÃO esteja utilizando esse serviço profissional, qual é o motivo?
+          </label>
+          <textarea id="q9_2_motivo" rows="2" placeholder="Descreva o motivo de não utilizar..." class="w-full p-2 text-sm rounded border border-amber-300 bg-white"></textarea>
+        </div>
+      </section>
+
+      <!-- SEÇÃO: PSICOLOGIA -->
+      <section class="card-box bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-4">
+        <h2 class="text-lg font-bold text-blue-900 border-b border-slate-200 pb-2 flex items-center gap-2">
+          <i class="fa-solid fa-brain text-blue-700"></i> PSICOLOGIA
+        </h2>
+
+        <div>
+          <label class="block text-sm font-semibold text-slate-800 mb-2">
+            10. Você está recebendo orientações ou fazendo acompanhamento psicológico? <span class="text-red-500">*</span>
+          </label>
+          <div class="flex gap-6">
+            <label class="inline-flex items-center cursor-pointer">
+              <input type="radio" name="q10_psicologia" value="Sim" onchange="toggleQ10(true)" required class="w-4 h-4 text-blue-600">
+              <span class="ml-2 text-sm text-slate-700">Sim</span>
+            </label>
+            <label class="inline-flex items-center cursor-pointer">
+              <input type="radio" name="q10_psicologia" value="Não" onchange="toggleQ10(false)" class="w-4 h-4 text-blue-600">
+              <span class="ml-2 text-sm text-slate-700">Não</span>
+            </label>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-slate-800 mb-2">
+            10.1 Quem oferece o serviço do profissional da psicologia que você está utilizando? (Pode marcar mais de uma)
+          </label>
+          <div class="space-y-1.5 text-sm">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" name="q10_1_oferece" value="Não estou utilizando" class="rounded text-blue-600">
+              <span>Não estou utilizando</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" name="q10_1_oferece" value="O Programa Nacional da ABRC" class="rounded text-blue-600">
+              <span>O Programa Nacional da ABRC</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" name="q10_1_oferece" value="Meu clube" class="rounded text-blue-600">
+              <span>Meu clube</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" name="q10_1_oferece" value="Particular" class="rounded text-blue-600">
+              <span>Particular</span>
+            </label>
+            <div class="flex items-center gap-2">
+              <input type="checkbox" id="q10_1_outro_check" name="q10_1_oferece" value="Outro" class="rounded text-blue-600">
+              <span class="whitespace-nowrap">Outro. Especifique:</span>
+              <input type="text" id="q10_1_outro_texto" class="w-full text-xs px-2 py-1 border border-slate-300 rounded">
+            </div>
+          </div>
+        </div>
+
+        <!-- CONDICIONAL Q10.2 -->
+        <div id="box_q10_2" class="hidden pl-4 border-l-4 border-amber-500 bg-amber-50/60 p-3 rounded-r-lg">
+          <label for="q10_2_motivo" class="block text-xs font-bold text-amber-900 mb-1">
+            IMPORTANTE - 10.2 Caso você NÃO esteja utilizando esse serviço profissional, qual é o motivo?
+          </label>
+          <textarea id="q10_2_motivo" rows="2" placeholder="Descreva o motivo de não utilizar..." class="w-full p-2 text-sm rounded border border-amber-300 bg-white"></textarea>
+        </div>
+      </section>
+
+      <!-- SEÇÃO: FISIOTERAPIA -->
+      <section class="card-box bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-4">
+        <h2 class="text-lg font-bold text-blue-900 border-b border-slate-200 pb-2 flex items-center gap-2">
+          <i class="fa-solid fa-hands-holding-circle text-blue-700"></i> FISIOTERAPIA
+        </h2>
+
+        <div>
+          <label class="block text-sm font-semibold text-slate-800 mb-1">
+            11. Você teve que se consultar com um profissional de fisioterapia durante esse mês? <span class="text-red-500">*</span>
+          </label>
+          <p class="text-xs text-slate-500 mb-2">IMPORTANTE: NÃO considerar tratamento recorrente, apenas consulta.</p>
+          <div class="flex gap-6">
+            <label class="inline-flex items-center cursor-pointer">
+              <input type="radio" name="q11_consulta" value="Sim" onchange="toggleQ11(true)" required class="w-4 h-4 text-blue-600">
+              <span class="ml-2 text-sm text-slate-700">Sim</span>
+            </label>
+            <label class="inline-flex items-center cursor-pointer">
+              <input type="radio" name="q11_consulta" value="Não" onchange="toggleQ11(false)" class="w-4 h-4 text-blue-600">
+              <span class="ml-2 text-sm text-slate-700">Não</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- CONDICIONAL Q11.1 -->
+        <div id="box_q11_1" class="hidden pl-4 border-l-4 border-blue-500 bg-blue-50/50 p-3 rounded-r-lg">
+          <label class="block text-xs font-bold text-blue-900 mb-2">
+            11.1 Em caso positivo, o profissional foi: (Pode marcar mais de uma)
+          </label>
+          <div class="space-y-1.5 text-sm">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" name="q11_1_tipo" value="Do Programa Nacional" class="rounded text-blue-600">
+              <span>Do Programa Nacional</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" name="q11_1_tipo" value="Particular" class="rounded text-blue-600">
+              <span>Particular</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" name="q11_1_tipo" value="SUS" class="rounded text-blue-600">
+              <span>SUS</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" name="q11_1_tipo" value="Não me consultei com profissional de fisioterapia" class="rounded text-blue-600">
+              <span>Não me consultei com profissional de fisioterapia</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="pt-2 border-t border-slate-200">
+          <label class="block text-sm font-semibold text-slate-800 mb-2">
+            12. Você teve que fazer algum tratamento fisioterapêutico durante esse mês? <span class="text-red-500">*</span>
+          </label>
+          <div class="flex gap-6">
+            <label class="inline-flex items-center cursor-pointer">
+              <input type="radio" name="q12_tratamento" value="Sim" onchange="toggleQ12(true)" required class="w-4 h-4 text-blue-600">
+              <span class="ml-2 text-sm text-slate-700">Sim</span>
+            </label>
+            <label class="inline-flex items-center cursor-pointer">
+              <input type="radio" name="q12_tratamento" value="Não" onchange="toggleQ12(false)" class="w-4 h-4 text-blue-600">
+              <span class="ml-2 text-sm text-slate-700">Não</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- CONDICIONAL Q12.1 -->
+        <div id="box_q12_1" class="hidden pl-4 border-l-4 border-red-500 bg-red-50/50 p-3 rounded-r-lg">
+          <label class="block text-xs font-bold text-red-900 mb-2">
+            12.1 Em caso positivo, você teve que interromper os treinos?
+          </label>
+          <div class="flex gap-6">
+            <label class="inline-flex items-center cursor-pointer">
+              <input type="radio" name="q12_1_interrompeu" value="Sim" class="w-4 h-4 text-red-600">
+              <span class="ml-2 text-sm font-semibold text-red-800">Sim</span>
+            </label>
+            <label class="inline-flex items-center cursor-pointer">
+              <input type="radio" name="q12_1_interrompeu" value="Não" class="w-4 h-4 text-blue-600">
+              <span class="ml-2 text-sm text-slate-700">Não</span>
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <!-- SEÇÃO: MEDICINA E ENFERMAGEM -->
+      <section class="card-box bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-4">
+        <h2 class="text-lg font-bold text-blue-900 border-b border-slate-200 pb-2 flex items-center gap-2">
+          <i class="fa-solid fa-user-doctor text-blue-700"></i> MEDICINA E ENFERMAGEM
+        </h2>
+
+        <div>
+          <label class="block text-sm font-semibold text-slate-800 mb-2">
+            13. Você teve que se consultar com um profissional de medicina ou enfermagem durante esse mês? <span class="text-red-500">*</span>
+          </label>
+          <div class="flex gap-6">
+            <label class="inline-flex items-center cursor-pointer">
+              <input type="radio" name="q13_consulta" value="Sim" onchange="toggleQ13(true)" required class="w-4 h-4 text-blue-600">
+              <span class="ml-2 text-sm text-slate-700">Sim</span>
+            </label>
+            <label class="inline-flex items-center cursor-pointer">
+              <input type="radio" name="q13_consulta" value="Não" onchange="toggleQ13(false)" class="w-4 h-4 text-blue-600">
+              <span class="ml-2 text-sm text-slate-700">Não</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- CONDICIONAL Q13.1 -->
+        <div id="box_q13_1" class="hidden pl-4 border-l-4 border-blue-500 bg-blue-50/50 p-3 rounded-r-lg">
+          <label class="block text-xs font-bold text-blue-900 mb-2">
+            13.1 Em caso positivo, o profissional foi: (Pode marcar mais de uma)
+          </label>
+          <div class="space-y-1.5 text-sm">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" name="q13_1_tipo" value="Do Programa Nacional" class="rounded text-blue-600">
+              <span>Do Programa Nacional</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" name="q13_1_tipo" value="Particular" class="rounded text-blue-600">
+              <span>Particular</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" name="q13_1_tipo" value="SUS" class="rounded text-blue-600">
+              <span>SUS</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" name="q13_1_tipo" value="Não me consultei com profissional de medicina e/ou enfermagem" class="rounded text-blue-600">
+              <span>Não me consultei com profissional de medicina e/ou enfermagem</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="pt-2 border-t border-slate-200">
+          <label class="block text-sm font-semibold text-slate-800 mb-2">
+            14. Você teve que fazer algum tratamento médico durante esse mês? <span class="text-red-500">*</span>
+          </label>
+          <div class="flex gap-6">
+            <label class="inline-flex items-center cursor-pointer">
+              <input type="radio" name="q14_tratamento" value="Sim" onchange="toggleQ14(true)" required class="w-4 h-4 text-blue-600">
+              <span class="ml-2 text-sm text-slate-700">Sim</span>
+            </label>
+            <label class="inline-flex items-center cursor-pointer">
+              <input type="radio" name="q14_tratamento" value="Não" onchange="toggleQ14(false)" class="w-4 h-4 text-blue-600">
+              <span class="ml-2 text-sm text-slate-700">Não</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- CONDICIONAL Q14.1 -->
+        <div id="box_q14_1" class="hidden pl-4 border-l-4 border-red-500 bg-red-50/50 p-3 rounded-r-lg">
+          <label class="block text-xs font-bold text-red-900 mb-2">
+            14.1 Em caso positivo, você teve que interromper os treinos?
+          </label>
+          <div class="flex gap-6">
+            <label class="inline-flex items-center cursor-pointer">
+              <input type="radio" name="q14_1_interrompeu" value="Sim" class="w-4 h-4 text-red-600">
+              <span class="ml-2 text-sm font-semibold text-red-800">Sim</span>
+            </label>
+            <label class="inline-flex items-center cursor-pointer">
+              <input type="radio" name="q14_1_interrompeu" value="Não" class="w-4 h-4 text-blue-600">
+              <span class="ml-2 text-sm text-slate-700">Não</span>
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <!-- SEÇÃO: PROGRAMA NACIONAL -->
+      <section class="card-box bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-4">
+        <h2 class="text-lg font-bold text-blue-900 border-b border-slate-200 pb-2 flex items-center gap-2">
+          <i class="fa-solid fa-flag text-blue-700"></i> PROGRAMA NACIONAL
+        </h2>
+
+        <div class="bg-amber-100 border-l-4 border-amber-600 p-3 rounded text-amber-950 text-xs font-bold">
+          ⭐ IMPORTANTE: Sua contribuição é fundamental para a evolução do programa nacional e do rugby em cadeira de rodas nacional. Se NÃO for o caso, apenas responda "N/A".
+        </div>
+
+        <div>
+          <label for="q15" class="block text-sm font-semibold text-slate-800 mb-1">
+            15. Quais suas impressões sobre a semana de treinamento?
+          </label>
+          <p class="text-xs text-slate-500 mb-1">(Programação, quantidade e horário dos treinos, acomodação, comissão técnica, staffs, coordenação, etc.)</p>
+          <textarea id="q15" rows="2" placeholder="Responda ou coloque N/A..." class="w-full p-2.5 text-sm rounded border border-slate-300"></textarea>
+        </div>
+
+        <div>
+          <label for="q16" class="block text-sm font-semibold text-slate-800 mb-1">
+            16. Quais suas impressões sobre o campeonato/torneio que você participou pela seleção brasileira?
+          </label>
+          <p class="text-xs text-slate-500 mb-1">(Programação, acomodação, alimentação, comissão técnica, staffs, coordenação, etc.)</p>
+          <textarea id="q16" rows="2" placeholder="Responda ou coloque N/A..." class="w-full p-2.5 text-sm rounded border border-slate-300"></textarea>
+        </div>
+
+        <div>
+          <label for="q17" class="block text-sm font-semibold text-slate-800 mb-1">
+            17. Você tem alguma sugestão ou comentário sobre a comissão técnica do Programa Nacional?
+          </label>
+          <textarea id="q17" rows="2" placeholder="Responda ou coloque N/A..." class="w-full p-2.5 text-sm rounded border border-slate-300"></textarea>
+        </div>
+
+        <div>
+          <label for="q18" class="block text-sm font-semibold text-slate-800 mb-1">
+            18. Você tem alguma sugestão ou comentário sobre os staffs do Programa Nacional?
+          </label>
+          <textarea id="q18" rows="2" placeholder="Responda ou coloque N/A..." class="w-full p-2.5 text-sm rounded border border-slate-300"></textarea>
+        </div>
+
+        <div>
+          <label for="q19" class="block text-sm font-semibold text-slate-800 mb-1">
+            19. Você tem alguma sugestão ou comentário sobre a coordenação do Programa Nacional?
+          </label>
+          <textarea id="q19" rows="2" placeholder="Responda ou coloque N/A..." class="w-full p-2.5 text-sm rounded border border-slate-300"></textarea>
+        </div>
+
+        <div>
+          <label for="q20" class="block text-sm font-semibold text-slate-800 mb-1">
+            20. Você tem alguma sugestão para o Programa Nacional como um todo?
+          </label>
+          <textarea id="q20" rows="2" placeholder="Responda ou coloque N/A..." class="w-full p-2.5 text-sm rounded border border-slate-300"></textarea>
+        </div>
+      </section>
+
+      <!-- SEÇÃO: FOTOS DAS ATIVIDADES -->
+      <section class="card-box bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-4">
+        <h2 class="text-lg font-bold text-blue-900 border-b border-slate-200 pb-2 flex items-center gap-2">
+          <i class="fa-solid fa-camera text-blue-700"></i> FOTOS DAS ATIVIDADES (MÍNIMO 2 FOTOS)
+        </h2>
+
+        <div class="bg-blue-50 border border-blue-200 p-3 rounded-lg text-xs text-blue-900 space-y-1">
+          <p class="font-bold flex items-center gap-1.5">
+            <i class="fa-solid fa-circle-info"></i> INSTRUÇÕES PARA ANEXAR FOTOS:
+          </p>
+          <p><strong>• Pelo Celular:</strong> Toque no botão "Escolher Foto" abaixo. Você pode tirar uma foto na hora com a câmera do celular ou escolher direto da sua galeria de fotos.</p>
+          <p><strong>• Pelo Computador:</strong> Clique no botão "Escolher Foto" e selecione as imagens salvas na sua pasta de arquivos/imagens.</p>
+          <p class="text-slate-600">As fotos serão compactadas automaticamente e aparecerão diagramadas dentro do seu PDF final.</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+          <!-- Foto 1 -->
+          <div class="border-2 border-dashed border-slate-300 rounded-xl p-4 text-center bg-white flex flex-col items-center justify-between min-h-[220px]">
+            <div class="w-full">
+              <span class="block text-xs font-bold uppercase text-slate-700 mb-2">Foto 1 (Obrigatória)</span>
+              <input type="file" id="fotoInput1" accept="image/*" class="text-xs text-slate-500 w-full file:mr-2 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer" onchange="previewFoto(1, event)">
+            </div>
+            <div id="fotoContainer1" class="mt-3 w-full h-36 bg-slate-100 rounded-lg flex items-center justify-center overflow-hidden border border-slate-200 text-slate-400 text-xs">
+              <span>Pré-visualização Foto 1</span>
+            </div>
+          </div>
+
+          <!-- Foto 2 -->
+          <div class="border-2 border-dashed border-slate-300 rounded-xl p-4 text-center bg-white flex flex-col items-center justify-between min-h-[220px]">
+            <div class="w-full">
+              <span class="block text-xs font-bold uppercase text-slate-700 mb-2">Foto 2 (Obrigatória)</span>
+              <input type="file" id="fotoInput2" accept="image/*" class="text-xs text-slate-500 w-full file:mr-2 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer" onchange="previewFoto(2, event)">
+            </div>
+            <div id="fotoContainer2" class="mt-3 w-full h-36 bg-slate-100 rounded-lg flex items-center justify-center overflow-hidden border border-slate-200 text-slate-400 text-xs">
+              <span>Pré-visualização Foto 2</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SEÇÃO: DATA E ASSINATURA -->
+      <section class="card-box bg-slate-50 p-5 rounded-xl border border-slate-200 space-y-4">
+        <h2 class="text-lg font-bold text-blue-900 border-b border-slate-200 pb-2 flex items-center gap-2">
+          <i class="fa-solid fa-signature text-blue-700"></i> DATA E ASSINATURA
+        </h2>
+
+        <div>
+          <label for="dataRelatorio" class="block text-sm font-semibold text-slate-800 mb-1">
+            Data do Relatório (Datar sempre como o ÚLTIMO DIA DO MÊS) <span class="text-red-500">*</span>
+          </label>
+          <input type="date" id="dataRelatorio" required class="w-full sm:w-64 p-2 rounded-lg border border-slate-300 text-sm">
+        </div>
+
+        <div class="bg-amber-50 border-l-4 border-amber-500 p-3 rounded text-xs text-amber-950 space-y-1">
+          <p class="font-bold flex items-center gap-1.5">
+            <i class="fa-solid fa-triangle-exclamation"></i> IMPORTANTE SOBRE A ASSINATURA:
+          </p>
+          <p>
+            É obrigatório constar <strong>ASSINATURA</strong> (e não apenas o nome digitado).
+          </p>
+          <p>
+            <strong>Você tem 2 opções práticas:</strong><br>
+            <strong>Opção 1:</strong> Desenhe sua assinatura com o dedo ou mouse diretamente no quadro abaixo.<br>
+            <strong>Opção 2:</strong> Salve o arquivo em PDF primeiro e assine digitalmente através de um aplicativo gratuito como <strong>GOV.BR</strong>, <strong>SIGNply</strong> ou <strong>Adobe Acrobat Reader</strong>.
+          </p>
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label class="block text-sm font-semibold text-slate-800">
+              Assinatura do Atleta no Quadro (Dedo ou Mouse):
+            </label>
+            <button type="button" onclick="limparAssinatura()" class="no-print text-xs text-red-600 hover:text-red-800 font-semibold underline">
+              <i class="fa-solid fa-eraser"></i> Limpar Assinatura
+            </button>
+          </div>
+          <div class="signature-pad-container border-2 border-slate-300 rounded-xl overflow-hidden bg-white max-w-lg">
+            <canvas id="signature-pad" width="500" height="150" class="w-full block"></canvas>
+          </div>
+          <p class="text-xs text-slate-500 mt-1 italic">
+            * Se for assinar pelo GOV.BR ou SIGNply após baixar o PDF, pode deixar o quadro acima em branco.
+          </p>
+        </div>
+      </section>
+
+      <!-- BOTÕES DE AÇÃO -->
+      <div class="no-print bg-slate-100 p-6 rounded-2xl border border-slate-300 space-y-4 text-center">
+        <p class="text-sm font-medium text-slate-700">
+          Revise suas respostas antes de finalizar.
+        </p>
+
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <!-- Botão 1: Enviar Dados (Google Sheets) -->
+          <button type="button" onclick="enviarParaPlanilha()" id="btnEnviar" class="w-full sm:w-auto px-6 py-3.5 bg-blue-700 hover:bg-blue-800 text-white font-bold rounded-xl shadow-lg transition duration-200 flex items-center justify-center gap-2">
+            <i class="fa-solid fa-cloud-arrow-up"></i>
+            <span>1. Salvar Respostas no Sistema</span>
+          </button>
+
+          <!-- Botão 2: Gerar / Salvar PDF -->
+          <button type="button" onclick="gerarPDF()" class="w-full sm:w-auto px-6 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-lg transition duration-200 flex items-center justify-center gap-2">
+            <i class="fa-solid fa-file-pdf"></i>
+            <span>2. Salvar Relatório em PDF</span>
+          </button>
+        </div>
+
+        <p class="text-xs text-slate-500">
+          Após gerar o PDF, envie para o Coordenador Ricardo Tanhoffer:<br>
+          ✉️ <strong>altorendimento@rugbiabrc.org.br</strong> | 📱 <strong>WhatsApp: (21) 97135-3180</strong>
+        </p>
+      </div>
+
+    </form>
+    
+    <!-- RODAPÉ -->
+    <footer class="bg-slate-900 text-slate-400 text-xs text-center py-4 px-6 border-t border-slate-800">
+      <p>Associação Brasileira de Rugby em Cadeira de Rodas (ABRC) • Gestão de Alto Rendimento</p>
+    </footer>
+
+  </div>
+
+  <!-- SCRIPT DE COMPORTAMENTO, ASSINATURA E INTEGRAÇÃO -->
+  <script>
+    // --- URL DO GOOGLE APPS SCRIPT OFICIAL DA ABRC ---
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwoE9sPlZ9W2Vmo1_PMQ5fTqBLEwF04TLewmU9F5JdFlLgDj4boox8tZYD24jxWCV5_CA/exec";
+
+    // --- VARIÁVEIS GLOBAIS PARA FOTOS ---
+    let fotoBase64_1 = "";
+    let fotoBase64_2 = "";
+
+    // --- CONTROLE DE EXIBIÇÃO CONDICIONAL ---
+    function toggleQ2(isSim) {
+      const box = document.getElementById('box_q3');
+      if (isSim) {
+        box.classList.remove('hidden');
+      } else {
+        box.classList.add('hidden');
+        document.getElementById('box_q3_1').classList.add('hidden');
+        const radiosQ3 = document.getElementsByName('q3_preencheu');
+        radiosQ3.forEach(r => r.checked = false);
+      }
+    }
+
+    function toggleQ3(isSim) {
+      const box = document.getElementById('box_q3_1');
+      if (!isSim) {
+        box.classList.remove('hidden');
+      } else {
+        box.classList.add('hidden');
+        document.getElementById('q3_1_motivo').value = '';
+      }
+    }
+
+    function toggleQ8(isSim) {
+      const box = document.getElementById('box_q8_2');
+      if (!isSim) {
+        box.classList.remove('hidden');
+      } else {
+        box.classList.add('hidden');
+        document.getElementById('q8_2_motivo').value = '';
+      }
+    }
+
+    function toggleQ9(isSim) {
+      const box = document.getElementById('box_q9_2');
+      if (!isSim) {
+        box.classList.remove('hidden');
+      } else {
+        box.classList.add('hidden');
+        document.getElementById('q9_2_motivo').value = '';
+      }
+    }
+
+    function toggleQ10(isSim) {
+      const box = document.getElementById('box_q10_2');
+      if (!isSim) {
+        box.classList.remove('hidden');
+      } else {
+        box.classList.add('hidden');
+        document.getElementById('q10_2_motivo').value = '';
+      }
+    }
+
+    function toggleQ11(isSim) {
+      const box = document.getElementById('box_q11_1');
+      if (isSim) {
+        box.classList.remove('hidden');
+      } else {
+        box.classList.add('hidden');
+        document.getElementsByName('q11_1_tipo').forEach(c => c.checked = false);
+      }
+    }
+
+    function toggleQ12(isSim) {
+      const box = document.getElementById('box_q12_1');
+      if (isSim) {
+        box.classList.remove('hidden');
+      } else {
+        box.classList.add('hidden');
+        document.getElementsByName('q12_1_interrompeu').forEach(c => c.checked = false);
+      }
+    }
+
+    function toggleQ13(isSim) {
+      const box = document.getElementById('box_q13_1');
+      if (isSim) {
+        box.classList.remove('hidden');
+      } else {
+        box.classList.add('hidden');
+        document.getElementsByName('q13_1_tipo').forEach(c => c.checked = false);
+      }
+    }
+
+    function toggleQ14(isSim) {
+      const box = document.getElementById('box_q14_1');
+      if (isSim) {
+        box.classList.remove('hidden');
+      } else {
+        box.classList.add('hidden');
+        document.getElementsByName('q14_1_interrompeu').forEach(c => c.checked = false);
+      }
+    }
+
+    // --- PROCESSAMENTO E PREVIEW DE FOTOS COM REDIMENSIONAMENTO ---
+    function previewFoto(numero, event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        // Redimensionar para manter leve no envio e no PDF
+        const img = new Image();
+        img.onload = function() {
+          const canvas = document.createElement('canvas');
+          const MAX_WIDTH = 800;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > MAX_WIDTH) {
+            height = Math.round((height * MAX_WIDTH) / width);
+            width = MAX_WIDTH;
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+          const container = document.getElementById(`fotoContainer${numero}`);
+          container.innerHTML = `<img src="${dataUrl}" class="w-full h-full object-cover rounded-lg" alt="Foto ${numero}">`;
+
+          if (numero === 1) fotoBase64_1 = dataUrl;
+          if (numero === 2) fotoBase64_2 = dataUrl;
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // --- CANVAS DE ASSINATURA TOUCH / MOUSE ---
+    const canvas = document.getElementById('signature-pad');
+    const ctx = canvas.getContext('2d');
+    let isDrawing = false;
+    let signatureEntered = false;
+
+    function setupCanvasDPI() {
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width * 2;
+      canvas.height = 150 * 2;
+      ctx.scale(2, 2);
+      ctx.lineWidth = 2.5;
+      ctx.lineCap = 'round';
+      ctx.strokeStyle = '#1e3a8a';
+    }
+    window.addEventListener('load', setupCanvasDPI);
+    window.addEventListener('resize', setupCanvasDPI);
+
+    function getPos(e) {
+      const rect = canvas.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      return {
+        x: clientX - rect.left,
+        y: clientY - rect.top
+      };
+    }
+
+    function startDraw(e) {
+      isDrawing = true;
+      signatureEntered = true;
+      const pos = getPos(e);
+      ctx.beginPath();
+      ctx.moveTo(pos.x, pos.y);
+      if (e.type === 'touchstart') e.preventDefault();
+    }
+
+    function draw(e) {
+      if (!isDrawing) return;
+      const pos = getPos(e);
+      ctx.lineTo(pos.x, pos.y);
+      ctx.stroke();
+      if (e.type === 'touchmove') e.preventDefault();
+    }
+
+    function endDraw() {
+      isDrawing = false;
+    }
+
+    canvas.addEventListener('mousedown', startDraw);
+    canvas.addEventListener('mousemove', draw);
+    window.addEventListener('mouseup', endDraw);
+
+    canvas.addEventListener('touchstart', startDraw, { passive: false });
+    canvas.addEventListener('touchmove', draw, { passive: false });
+    window.addEventListener('touchend', endDraw);
+
+    function limparAssinatura() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      signatureEntered = false;
+    }
+
+    // --- COLETA DOS DADOS DO FORMULÁRIO ---
+    function coletarDados() {
+      const getVal = (id) => document.getElementById(id) ? document.getElementById(id).value : '';
+      const getRadio = (name) => {
+        const el = document.querySelector(`input[name="${name}"]:checked`);
+        return el ? el.value : '';
+      };
+      const getCheckboxes = (name) => {
+        const els = document.querySelectorAll(`input[name="${name}"]:checked`);
+        return Array.from(els).map(el => el.value).join('; ');
+      };
+
+      return {
+        timestamp: new Date().toISOString(),
+        atletaNome: getVal('atletaNome'),
+        mesReferencia: getVal('mesReferencia'),
+        recebeBolsa: getRadio('recebeBolsa'),
+        
+        q1_atividades: getCheckboxes('q1_atividades') + (document.getElementById('q1_outro_check').checked ? ` (Outro: ${getVal('q1_outro_texto')})` : ''),
+        q1_2_detalhes: getVal('q1_2'),
+        q2_solicitacao: getRadio('q2_solicitacao'),
+        q3_preencheu: getRadio('q3_preencheu'),
+        q3_1_motivo: getVal('q3_1_motivo'),
+        
+        q4_quadra: getRadio('q4_quadra'),
+        q5_complementar_freq: getRadio('q5_complementar_freq'),
+        q6_tipo: getCheckboxes('q6_tipo') + (document.getElementById('q6_outro_check').checked ? ` (Outro: ${getVal('q6_outro_texto')})` : ''),
+        q7_detalhes: getVal('q7_detalhes'),
+        
+        q8_edfisica: getRadio('q8_edfisica'),
+        q8_1_oferece: getCheckboxes('q8_1_oferece') + (document.getElementById('q8_1_outro_check').checked ? ` (Outro: ${getVal('q8_1_outro_texto')})` : ''),
+        q8_2_motivo: getVal('q8_2_motivo'),
+        
+        q9_nutricao: getRadio('q9_nutricao'),
+        q9_1_oferece: getCheckboxes('q9_1_oferece') + (document.getElementById('q9_1_outro_check').checked ? ` (Outro: ${getVal('q9_1_outro_texto')})` : ''),
+        q9_2_motivo: getVal('q9_2_motivo'),
+        
+        q10_psicologia: getRadio('q10_psicologia'),
+        q10_1_oferece: getCheckboxes('q10_1_oferece') + (document.getElementById('q10_1_outro_check').checked ? ` (Outro: ${getVal('q10_1_outro_texto')})` : ''),
+        q10_2_motivo: getVal('q10_2_motivo'),
+        
+        q11_consulta: getRadio('q11_consulta'),
+        q11_1_tipo: getCheckboxes('q11_1_tipo'),
+        q12_tratamento: getRadio('q12_tratamento'),
+        q12_1_interrompeu: getRadio('q12_1_interrompeu'),
+        
+        q13_consulta: getRadio('q13_consulta'),
+        q13_1_tipo: getCheckboxes('q13_1_tipo'),
+        q14_tratamento: getRadio('q14_tratamento'),
+        q14_1_interrompeu: getRadio('q14_1_interrompeu'),
+        
+        q15_semana_treino: getVal('q15'),
+        q16_campeonato: getVal('q16'),
+        q17_comissao: getVal('q17'),
+        q18_staffs: getVal('q18'),
+        q19_coordenacao: getVal('q19'),
+        q20_sugestao_geral: getVal('q20'),
+        
+        dataRelatorio: getVal('dataRelatorio'),
+        temAssinaturaNaTela: signatureEntered ? "SIM" : "NÃO"
+      };
+    }
+
+    // --- 1. ENVIAR DADOS PARA O GOOGLE SHEETS ---
+    async function enviarParaPlanilha() {
+      const form = document.getElementById('relatorioForm');
+      if (!form.checkValidity()) {
+        alert('Por favor, preencha todos os campos obrigatórios marcados com asterisco (*) antes de enviar.');
+        form.reportValidity();
+        return;
+      }
+
+      const btn = document.getElementById('btnEnviar');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Enviando respostas...`;
+      btn.disabled = true;
+
+      try {
+        const dados = coletarDados();
+        const response = await fetch(GOOGLE_SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(dados)
+        });
+
+        alert('✅ Respostas enviadas com sucesso para o banco de dados da ABRC! Agora, clique no botão "2. Salvar Relatório em PDF" para baixar sua via e assinar/enviar para o Ricardo Tanhoffer.');
+      } catch (err) {
+        console.error(err);
+        alert('Ocorreu um erro ao enviar para a planilha. Mas você ainda pode gerar o PDF clicando no botão "2. Salvar Relatório em PDF".');
+      } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }
+    }
+
+    // --- 2. GERAR / IMPRIMIR PDF NATIVO FORMATADO ---
+    function gerarPDF() {
+      const form = document.getElementById('relatorioForm');
+      if (!form.checkValidity()) {
+        alert('Por favor, preencha os campos obrigatórios antes de gerar o PDF.');
+        form.reportValidity();
+        return;
+      }
+      window.print();
+    }
+  </script>
+</body>
+</html>
