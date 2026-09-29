@@ -909,7 +909,28 @@
 
       <!-- BOTÕES DE AÇÃO -->
       <div class="no-print bg-slate-100 p-6 rounded-2xl border border-slate-300 space-y-4 text-center">
-        <p class="text-sm font-medium text-slate-700">
+
+        <!-- AVISO DE OBRIGATORIEDADE DOS DOIS BOTÕES -->
+        <div class="bg-red-50 border-2 border-red-500 rounded-xl p-4 text-left">
+          <p class="text-red-700 font-extrabold text-base mb-3 text-center uppercase tracking-wide">
+            ⚠️ ATENÇÃO — DOIS PASSOS OBRIGATÓRIOS ⚠️
+          </p>
+          <p class="text-red-800 text-sm font-semibold mb-2">
+            Você <u>deve clicar nos dois botões</u> abaixo para concluir o relatório corretamente:
+          </p>
+          <ul class="text-sm space-y-2">
+            <li class="flex items-start gap-2">
+              <span class="inline-block bg-blue-700 text-white font-bold rounded-lg px-2 py-0.5 text-xs whitespace-nowrap mt-0.5">PASSO 1</span>
+              <span class="text-slate-800">Clique no botão <strong class="text-blue-700">azul</strong> — <em>"1. Salvar Respostas no Sistema"</em>. Isso envia suas respostas à coordenação da ABRC. <strong class="text-red-700">Sem este passo, seus dados NÃO chegam ao coordenador.</strong></span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="inline-block bg-emerald-600 text-white font-bold rounded-lg px-2 py-0.5 text-xs whitespace-nowrap mt-0.5">PASSO 2</span>
+              <span class="text-slate-800">Clique no botão <strong class="text-emerald-700">verde</strong> — <em>"2. Salvar Relatório em PDF"</em>. Isso gera o documento PDF que você deve salvar e enviar por WhatsApp ou e-mail.</span>
+            </li>
+          </ul>
+        </div>
+
+        <p class="text-sm font-medium text-slate-600">
           Revise suas respostas antes de finalizar.
         </p>
 
@@ -1051,6 +1072,7 @@
 
       const reader = new FileReader();
       reader.onload = function(e) {
+        // Redimensionar para manter leve no envio e no PDF
         const img = new Image();
         img.onload = function() {
           const canvas = document.createElement('canvas');
@@ -1086,6 +1108,7 @@
     let isDrawing = false;
     let signatureEntered = false;
 
+    // Ajustar DPI do canvas
     function setupCanvasDPI() {
       const rect = canvas.getBoundingClientRect();
       canvas.width = rect.width * 2;
@@ -1214,6 +1237,11 @@
         return;
       }
 
+      if (GOOGLE_SCRIPT_URL === "SUA_URL_DO_GOOGLE_APPS_SCRIPT_AQUI") {
+        alert('Atenção: Configure a URL do Google Apps Script no código antes do envio online. Para salvar apenas o PDF, clique no botão "2. Salvar Relatório em PDF".');
+        return;
+      }
+
       const btn = document.getElementById('btnEnviar');
       const originalText = btn.innerHTML;
       btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Enviando respostas...`;
@@ -1228,7 +1256,7 @@
           body: JSON.stringify(dados)
         });
 
-        alert('✅ Respostas enviadas com sucesso para o banco de dados da ABRC! Agora, role até o final da página para ler as instruções e clique no botão "2. Salvar Relatório em PDF" para baixar sua via e enviar para o Ricardo Tanhoffer.');
+        alert('✅ Respostas enviadas com sucesso para o banco de dados da ABRC! Agora, clique no botão "2. Salvar Relatório em PDF" para baixar sua via e assinar/enviar para o Ricardo Tanhoffer.');
       } catch (err) {
         console.error(err);
         alert('Ocorreu um erro ao enviar para a planilha. Mas você ainda pode gerar o PDF clicando no botão "2. Salvar Relatório em PDF".');
@@ -1246,6 +1274,7 @@
         form.reportValidity();
         return;
       }
+      // Aciona o diálogo de impressão do navegador (que permite "Salvar como PDF" no celular e computador com qualidade perfeita)
       window.print();
     }
   </script>
