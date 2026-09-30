@@ -40,6 +40,13 @@
       .signature-pad-container {
         border: 1px dashed #666 !important;
       }
+      /* Na impressão/PDF: esconder o canvas e mostrar a imagem da assinatura */
+      #signature-pad {
+        display: none !important;
+      }
+      #signature-print.has-signature {
+        display: block !important;
+      }
     }
     .print-only {
       display: none;
@@ -852,6 +859,8 @@
           </div>
           <div class="signature-pad-container border-2 border-slate-300 rounded-xl overflow-hidden bg-white max-w-lg">
             <canvas id="signature-pad" width="500" height="150" class="w-full block"></canvas>
+            <!-- Imagem usada apenas na impressão/PDF (o canvas costuma sair em branco no PDF, principalmente no celular) -->
+            <img id="signature-print" alt="Assinatura do atleta" class="w-full block" style="display:none;" />
           </div>
           <p class="text-xs text-slate-500 mt-1 italic">
             * Se for assinar pelo GOV.BR ou SIGNply após baixar o PDF, pode deixar o quadro acima em branco.
@@ -1108,44 +1117,89 @@
     let isDrawing = false;
     let signatureEntered = false;
 
-    // Ajustar DPI do canvas
-    function setupCanvasDPI() {
-      const rect = canvas.getBoundingClientRect();
-      canvas.width = rect.width * 2;
-      canvas.height = 150 * 2;
-      ctx.scale(2, 2);
+    // Ajustar DPI do canvas (sem acumular escala e preservando o traço já feito)
+    let lastCanvasCssWidth = 0;
+
+    function applyStrokeStyle() {
       ctx.lineWidth = 2.5;
       ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
       ctx.strokeStyle = '#1e3a8a';
     }
+
+    function setupCanvasDPI() {
+      const rect = canvas.getBoundingClientRect();
+      const cssWidth = rect.width || 500;
+      const cssHeight = 150;
+
+      // Só recalibra se a largura CSS mudou de fato (evita resets constantes no celular)
+      if (Math.round(cssWidth) === Math.round(lastCanvasCssWidth) && canvas.width > 0) {
+        applyStrokeStyle();
+        return;
+      }
+
+      // Preserva o que já foi desenhado antes de redimensionar
+      let previous = null;
+      if (canvas.width > 0 && signatureEntered) {
+        try { previous = canvas.toDataURL('image/png'); } catch (err) { previous = null; }
+      }
+
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = Math.round(cssWidth * dpr);
+      canvas.height = Math.round(cssHeight * dpr);
+
+      // setTransform NÃO acumula (diferente de scale, que era o bug no celular)
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      applyStrokeStyle();
+
+      // Redesenha a assinatura anterior, se havia
+      if (previous) {
+        const img = new Image();
+        img.onload = function () {
+          ctx.drawImage(img, 0, 0, cssWidth, cssHeight);
+        };
+        img.src = previous;
+      }
+
+      lastCanvasCssWidth = cssWidth;
+    }
+
     window.addEventListener('load', setupCanvasDPI);
     window.addEventListener('resize', setupCanvasDPI);
+    // orientationchange cobre a rotação de tela no celular
+    window.addEventListener('orientationchange', function () {
+      setTimeout(setupCanvasDPI, 200);
+    });
 
     function getPos(e) {
       const rect = canvas.getBoundingClientRect();
-      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      const point = (e.touches && e.touches[0]) ? e.touches[0]
+                  : (e.changedTouches && e.changedTouches[0]) ? e.changedTouches[0]
+                  : e;
       return {
-        x: clientX - rect.left,
-        y: clientY - rect.top
+        x: point.clientX - rect.left,
+        y: point.clientY - rect.top
       };
     }
 
     function startDraw(e) {
+      if (e.type === 'touchstart') e.preventDefault();
       isDrawing = true;
       signatureEntered = true;
       const pos = getPos(e);
       ctx.beginPath();
       ctx.moveTo(pos.x, pos.y);
-      if (e.type === 'touchstart') e.preventDefault();
+      // desenha um ponto, caso seja apenas um toque curto
+      ctx.lineTo(pos.x + 0.1, pos.y + 0.1);
+      ctx.stroke();
     }
 
     function draw(e) {
       if (!isDrawing) return;
+      if (e.type === 'touchmove') e.preventDefault();
       const pos = getPos(e);
       ctx.lineTo(pos.x, pos.y);
       ctx.stroke();
-      if (e.type === 'touchmove') e.preventDefault();
     }
 
     function endDraw() {
@@ -1158,7 +1212,8 @@
 
     canvas.addEventListener('touchstart', startDraw, { passive: false });
     canvas.addEventListener('touchmove', draw, { passive: false });
-    window.addEventListener('touchend', endDraw);
+    canvas.addEventListener('touchend', endDraw);
+    canvas.addEventListener('touchcancel', endDraw);
 
     function limparAssinatura() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -1266,6 +1321,30 @@
       }
     }
 
+    // Copia o desenho do canvas para uma <img>, que imprime de forma confiável
+    // (o canvas costuma sair em branco no PDF, especialmente no celular)
+    function prepararAssinaturaParaImpressao() {
+      const img = document.getElementById('signature-print');
+      if (!img) return;
+      if (signatureEntered) {
+        try {
+          img.src = canvas.toDataURL('image/png');
+          img.classList.add('has-signature');
+        } catch (err) {
+          img.classList.remove('has-signature');
+        }
+      } else {
+        img.classList.remove('has-signature');
+        img.removeAttribute('src');
+      }
+    }
+
+    // Após imprimir, remove o estado (para a imagem não aparecer na tela)
+    window.addEventListener('afterprint', function () {
+      const img = document.getElementById('signature-print');
+      if (img) img.classList.remove('has-signature');
+    });
+
     // --- 2. GERAR / IMPRIMIR PDF NATIVO FORMATADO ---
     function gerarPDF() {
       const form = document.getElementById('relatorioForm');
@@ -1274,8 +1353,12 @@
         form.reportValidity();
         return;
       }
-      // Aciona o diálogo de impressão do navegador (que permite "Salvar como PDF" no celular e computador com qualidade perfeita)
-      window.print();
+      // Converte a assinatura em imagem antes de imprimir (garante que apareça no PDF, inclusive no celular)
+      prepararAssinaturaParaImpressao();
+      // Pequeno atraso garante que a imagem foi carregada antes do diálogo de impressão
+      setTimeout(function () {
+        window.print();
+      }, 150);
     }
   </script>
 </body>
