@@ -10,9 +10,13 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     @media print {
+      /* Força o navegador a imprimir cores de fundo (cabeçalho azul, caixas coloridas) */
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
+      }
       body {
-        background: white !important;
-        color: #111 !important;
         font-size: 11pt !important;
       }
       .no-print {
@@ -24,18 +28,14 @@
       .page-break {
         page-break-before: always;
       }
+      /* Evita que caixas/seções sejam cortadas entre páginas */
       .card-box {
-        border: 1px solid #ccc !important;
-        box-shadow: none !important;
-        margin-bottom: 12px !important;
-        padding: 10px !important;
-        background: transparent !important;
+        break-inside: avoid;
+        page-break-inside: avoid;
       }
-      input, select, textarea {
-        border: none !important;
-        border-bottom: 1px solid #999 !important;
-        background: transparent !important;
-        box-shadow: none !important;
+      /* Fallback de cor sólida no cabeçalho, caso o gradiente não renderize na impressão */
+      .report-header {
+        background-color: #1e3a8a !important; /* azul (blue-900) */
       }
       .signature-pad-container {
         border: 1px dashed #666 !important;
@@ -64,7 +64,7 @@
   <div class="max-w-4xl mx-auto bg-white shadow-xl rounded-2xl overflow-hidden border border-slate-200">
     
     <!-- CABEÇALHO DO RELATÓRIO -->
-    <header class="bg-gradient-to-r from-blue-900 via-blue-800 to-indigo-900 text-white p-6 sm:p-8">
+    <header class="report-header bg-gradient-to-r from-blue-900 via-blue-800 to-indigo-900 text-white p-6 sm:p-8">
       <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-blue-700/60 pb-6">
         <div class="text-center sm:text-left">
           <span class="inline-block bg-yellow-400 text-blue-950 font-black text-xs px-3 py-1 rounded-full uppercase tracking-wider mb-2">
